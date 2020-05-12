@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const chai = require("chai");
 const expect = chai.expect;
 
@@ -200,7 +202,7 @@ describe("PROTOTYPES", () => {
         feCapacity: 110,
         beCapacity: 96
       })
-    }), it("sortByCapacity", () => {
+    }), it.only("sortByCapacity", () => {
       const e = classPrompts.sortByCapacity();
       expect(e).to.deep.equal([{
         roomLetter: "H",
