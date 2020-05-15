@@ -372,7 +372,9 @@ const bookPrompts = {
     //   'Catch-22', 'Treasure Island']
 
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = books
+      .filter(book => book.genre !== 'Horror' && book.genre !== 'True Crime')
+      .map(book => book.title);
     return result;
 
     // Annotation:
@@ -387,7 +389,9 @@ const bookPrompts = {
     //  { title: 'Life of Pi', year: 2001 },
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = books.filter(book => book.published >= 1990).map(({title, published}) => {
+      return {title: title, year: published}
+    });
     return result;
 
     // Annotation:
@@ -410,7 +414,11 @@ const weatherPrompts = {
     // return an array of all the average temperatures. Eg:
     // [ 40, 40, 44.5, 43.5, 57, 35, 65.5, 62, 14, 46.5 ]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = weather.reduce((acc, city) => {
+      let avg = (city.temperature.high + city.temperature.low) / 2
+      acc.push(avg)
+      return acc
+    }, []);
     return result;
 
     // Annotation:
@@ -424,7 +432,13 @@ const weatherPrompts = {
     // 'New Orleans, Louisiana is sunny.',
     // 'Raleigh, North Carolina is mostly sunny.' ]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = 
+      weather.filter(city => city.type === 'sunny' || city.type === 'mostly sunny')
+      .reduce((acc, city) => {
+      let sentence = `${city.location} is ${city.type}.`
+      acc.push(sentence)
+      return acc
+    }, []);
     return result;
 
     // Annotation:
@@ -440,7 +454,7 @@ const weatherPrompts = {
     //   temperature: { high: 49, low: 38 }
     // }
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = weather.sort((a, b) => b.humidity - a.humidity).shift();
     return result;
 
     // Annotation:
@@ -467,7 +481,10 @@ const nationalParksPrompts = {
     //   parksVisited: ["Rocky Mountain", "Acadia", "Zion"]
     //}
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = nationalParks.reduce((acc, park) => {
+        park.visited ? acc.parksVisited.push(park.name) : acc.parksToVisit.push(park.name)
+      return acc
+    }, {parksToVisit: [], parksVisited: []});
     return result;
 
     // Annotation:
@@ -484,7 +501,11 @@ const nationalParksPrompts = {
     // { Florida: 'Everglades' } ]
 
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = nationalParks.map(park => {
+      let obj = {}
+      obj[park.location] = park.name
+      return obj
+    });
     return result;
 
     // Annotation:
@@ -507,7 +528,12 @@ const nationalParksPrompts = {
     //   'backpacking',
     //   'rock climbing' ]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = nationalParks.reduce((acc, park) => {
+      park.activities.forEach(activity => {
+        !acc.includes(activity) ? acc.push(activity) : null
+      })
+      return acc
+    }, []);
     return result;
 
     // Annotation:
@@ -610,7 +636,15 @@ const turingPrompts = {
     //  { name: 'Robbie', studentCount: 18 }
     // ]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = instructors.map(instructor => {
+      return cohorts.reduce((acc, cohort) => {
+        acc.name = instructor.name
+        if (!acc.studentCount && instructor.module === cohort.module) {
+          acc.studentCount = cohort.studentCount
+        }
+        return acc
+      }, {})
+    });
     return result;
 
     // Annotation:
@@ -646,7 +680,20 @@ const turingPrompts = {
     //     Will: [1, 2, 3, 4]
     //   }
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = instructors.reduce((acc, instructor) => {
+      cohorts.forEach(cohort => {
+        cohort.curriculum.forEach(subject => {
+          if(!acc[instructor.name]) {
+            acc[instructor.name] = []
+          }
+          if (instructor.teaches.includes(subject)) {
+            acc[instructor.name].push(cohort.module)
+          }
+        })
+      })
+      acc[instructor.name] = [...new Set(acc[instructor.name])]
+      return acc
+    }, {});
     return result;
 
     // Annotation:
@@ -663,7 +710,22 @@ const turingPrompts = {
     //   recursion: [ 'Pam', 'Leta' ]
     // }
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    let obj = cohorts.reduce((acc, cohort) => {
+      cohort.curriculum.forEach(topic => {
+        !acc[topic] ? acc[topic] = [] : null
+      })
+      return acc
+    }, {})
+    
+    Object.keys(obj).forEach(key => {
+      instructors.forEach(instructor => {
+        if(instructor.teaches.includes(key)){
+          obj[key].push(instructor.name)
+        }
+      })
+    })
+    
+    const result = obj;
     return result;
 
     // Annotation:
