@@ -388,7 +388,7 @@ describe("PROTOTYPES", () => {
         name: "Will",
         studentCount: 20
       }])
-    }), it.only("studentsPerInstructor", () => {
+    }), it("studentsPerInstructor", () => {
       const e = turingPrompts.studentsPerInstructor();
       expect(e).to.deep.equal({
         cohort1806: 15,

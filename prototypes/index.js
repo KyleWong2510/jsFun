@@ -560,7 +560,10 @@ const breweryPrompts = {
     // Return the total beer count of all beers for every brewery e.g.
     // 40
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = breweries.reduce((acc, brewery) => {
+      acc += brewery.beers.length
+      return acc
+    }, 0);
     return result;
 
     // Annotation:
@@ -576,7 +579,7 @@ const breweryPrompts = {
     // ...etc.
     // ]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = breweries.map(brewery => ({name: brewery.name, beerCount: brewery.beers.length}));
     return result;
 
     // Annotation:
@@ -587,8 +590,10 @@ const breweryPrompts = {
     // Return the beer which has the highest ABV of all beers
     // e.g.
     // { name: 'Barrel Aged Nature\'s Sweater', type: 'Barley Wine', abv: 10.9, ibu: 40 }
-
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    let arr = breweries.map(brewery => brewery.beers)
+    let newArr = [...arr].flat().sort((a, b) => b.abv - a.abv)
+  
+    const result = newArr.shift();
     return result;
 
     // Annotation:
@@ -657,8 +662,19 @@ const turingPrompts = {
     // cohort1806: 9,
     // cohort1804: 10.5
     // }
-
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    let instructorsPerMod = instructors.reduce((acc, instructor) => {
+      if (!acc[instructor.module]) {
+        acc[instructor.module] = 0
+      }
+      acc[instructor.module]++
+      return acc
+    }, {})
+    
+    const result = cohorts.reduce((acc, cohort) => {
+      let studentsPer = cohort.studentCount / instructorsPerMod[cohort.module]
+      acc[`cohort${cohort.cohort}`] = studentsPer
+      return acc
+    }, {});
     return result;
 
     // Annotation:
@@ -760,7 +776,20 @@ const bossPrompts = {
     //   { bossName: 'Scar', sidekickLoyalty: 16 }
     // ]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    let bossNames = Object.values(bosses).map(boss => boss.name)
+
+    const result = bossNames.map(boss => {
+      let bossObj = {
+        bossName: boss,
+        sidekickLoyalty: 0
+      }
+      sidekicks.forEach(sidekick => {
+        if(sidekick.boss === boss) {
+          bossObj.sidekickLoyalty += sidekick.loyaltyToBoss
+        }
+      })
+      return bossObj
+    });
     return result;
 
     // Annotation:
@@ -801,8 +830,10 @@ const astronomyPrompts = {
     //     lightYearsFromEarth: 640,
     //     color: 'red' }
     // ]
+    let vals = Object.values(constellations)
+    let starsList = vals.map(con => con.stars).flat()
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = stars.filter(star => starsList.includes(star.name));
     return result;
 
     // Annotation:
@@ -820,7 +851,13 @@ const astronomyPrompts = {
     //   red: [{obj}]
     // }
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = stars.reduce((acc, star) => {
+      if(!acc[star.color]) {
+        acc[star.color] = []
+      }
+      acc[star.color].push(star)
+      return acc
+    }, {});
     return result;
 
     // Annotation:
@@ -841,8 +878,11 @@ const astronomyPrompts = {
     //    "Orion",
     //    "The Little Dipper" ]
 
+    let sortedByBrightness = stars.sort((a, b) => a.visualMagnitude - b.visualMagnitude)
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = sortedByBrightness
+      .filter(star => star.constellation)
+      .map(star => star.constellation)
     return result;
 
     // Annotation:
@@ -873,7 +913,12 @@ const ultimaPrompts = {
     // Return the sum of the amount of damage for all the weapons that our characters can use
     // Answer => 113
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    let charWeapons = characters.map(char => char.weapons).flat()
+    
+    const result = charWeapons.reduce((acc, charWeap) => {
+      acc += weapons[charWeap].damage
+      return acc
+    }, 0);
     return result;
 
     // Annotation:
@@ -884,12 +929,33 @@ const ultimaPrompts = {
 
     // Return the sum damage and total range for each character as an object.
     // ex: [ { Avatar: { damage: 27, range: 24 }, { Iolo: {...}, ...}
+    let weaponKeys = Object.keys(weapons)
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = characters.reduce((acc, char) => {
+      let charStats = {}
+      charStats[char.name] = {
+        damage: 0,
+        range: 0
+      }
+
+      weaponKeys.forEach(weap => {        
+        if (char.weapons.includes(weap)) {          
+          charStats[char.name].damage += weapons[weap].damage
+          charStats[char.name].range += weapons[weap].range
+        }
+      })
+
+      acc.push(charStats)
+
+      return acc
+    }, [])
+
     return result;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // return object where key is character name, value is obj 
+      // key of damage, value of total damage
+      // key of range, value of total range
   },
 };
 
